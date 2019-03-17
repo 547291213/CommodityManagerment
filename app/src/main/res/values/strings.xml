@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">CommodityManagerment</string>
+    <string name="app_name_china">商品管理系统</string>
+    <string name="loading">正在加载</string>
+
+
+    <declare-styleable name="IndexBottomLayout">
+        <attr name="iconSrc" format="reference" />
+        <attr name="iconWidth" format="dimension" />
+        <attr name="iconHeight" format="dimension" />
+        <attr name="title" format="string" />
+
+    </declare-styleable>
+</resources>

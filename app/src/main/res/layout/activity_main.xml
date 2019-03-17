@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_indexMainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <!--/>-->
+    <com.example.commoditymanagerment.DrawableView.ViewPagerSlide
+        android:id="@+id/vp_indexFragmentPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_indexbottomLayout"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ll_indexbottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+
+        <com.example.commoditymanagerment.DrawableView.IndexBottomLayout
+            android:id="@+id/ib_indexBottomRefresh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:onClick="bottomLayoutClick"
+            app:iconSrc="@drawable/ic_refresh_gray_48"
+            app:iconHeight="50dp"
+            app:iconWidth="50dp"
+            app:title="刷新"
+            >
+
+        </com.example.commoditymanagerment.DrawableView.IndexBottomLayout>
+
+
+        <com.example.commoditymanagerment.DrawableView.IndexBottomLayout
+            android:id="@+id/ib_indexBottomHomepage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:onClick="bottomLayoutClick"
+            app:iconSrc="@drawable/ic_homepage_blue_48"
+            app:iconHeight="50dp"
+            app:iconWidth="50dp"
+            app:title="主页">
+
+        </com.example.commoditymanagerment.DrawableView.IndexBottomLayout>
+
+        <com.example.commoditymanagerment.DrawableView.IndexBottomLayout
+            android:id="@+id/ib_indexBottomPersonalcenter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:onClick="bottomLayoutClick"
+            app:iconSrc="@drawable/ic_personalcenter_gray_48"
+            app:iconHeight="50dp"
+            app:iconWidth="50dp"
+            app:title="个人">
+
+
+        </com.example.commoditymanagerment.DrawableView.IndexBottomLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
