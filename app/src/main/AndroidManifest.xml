@@ -17,7 +17,7 @@
                 <action
                     android:name="android.intent.action.MAIN"
                     android:launchMode="singleTask"
-                    android:theme="@style/Theme.AppCompat.NoActionBar" />
+                    android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -27,15 +27,16 @@
 
         <activity
             android:name=".Activity.RegisterActivity"
+
             android:launchMode="singleTask"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         </activity>
 
         <activity
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         </activity>
 

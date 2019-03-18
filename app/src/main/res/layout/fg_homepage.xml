@@ -1,14 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/srl_messageRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <TextView
-        android:id="@+id/tv_homepage"
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="HOmepage"
-        android:textSize="30sp"
-        android:gravity="center"
-        />
-</RelativeLayout>
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:id="@+id/ll_titleLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/light_red"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:id="@+id/tv_setBackText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="2"
+                android:gravity="left|center_vertical"
+                android:text="首页"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:gravity="center_vertical"
+                android:text="商品管理系统"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_commonditymanager_16"
+
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/et_searchEdit"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="搜索你感兴趣的商品"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:drawableLeft="@drawable/ic_search_white_16"
+            android:drawablePadding="0dp"
+            android:layout_below="@id/ll_titleLayout"
+
+            />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/et_searchEdit">
+
+
+            <TextView
+                android:id="@+id/tv_messageEmptyView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:text="还没有任何商品"
+                android:textSize="20sp"
+                android:textStyle="italic" />
+
+        </FrameLayout>
+
+
+
+    </RelativeLayout>
+
+</android.support.v4.widget.SwipeRefreshLayout>
