@@ -7,20 +7,11 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="match_parent"
         android:textSize="30sp"
-        android:text="HOT"
+        android:text="SEARCH"
         android:gravity="center"
         />
 
-    <com.example.commoditymanagerment.DrawableView.GoodsListView
-        android:id="@+id/glv_hotGoodsList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:listSelector="@color/gray"
-        >
-
-
-    </com.example.commoditymanagerment.DrawableView.GoodsListView>
 
 </LinearLayout>

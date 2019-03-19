@@ -12,7 +12,6 @@
     <string name="category_out_of_stock">缺货</string>
 
 
-
     <!--首页底部自定义布局-->
     <declare-styleable name="IndexBottomLayout">
         <attr name="iconSrc" format="reference" />
@@ -21,4 +20,15 @@
         <attr name="title" format="string" />
 
     </declare-styleable>
+
+    <!--自定义ImageView样式-->
+    <declare-styleable name="ShapedImageView">
+        <attr name="shape_mode" format="enum">
+            <enum name="round_rect" value="1" />
+            <enum name="circle" value="2" />
+        </attr>
+        <attr name="round_radius" format="dimension" />
+    </declare-styleable>
+
+
 </resources>

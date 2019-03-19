@@ -2,6 +2,7 @@ package com.example.commoditymanagerment.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.commoditymanagerment.Activity.AddGoodsActivity;
+import com.example.commoditymanagerment.Activity.SearchActivity;
 import com.example.commoditymanagerment.DrawableView.InnerViewPager;
 import com.example.commoditymanagerment.DrawableView.TopTabFragmentAdapter;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.ActivityFragment;
@@ -32,6 +34,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class HomepageFragment extends Fragment {
@@ -48,6 +51,8 @@ public class HomepageFragment extends Fragment {
     InnerViewPager viewPager;
 
     Unbinder unbinder;
+    @BindView(R.id.tv_addGoodsTv)
+    TextView tvAddGoodsTv;
 
     private View view;
     private Context mContext;
@@ -68,7 +73,8 @@ public class HomepageFragment extends Fragment {
 
     private List<String> titles;
 
-    private int vpPosition = 0 ;
+    private int vpPosition = 0;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -143,14 +149,32 @@ public class HomepageFragment extends Fragment {
 
         fragmentManager = getChildFragmentManager();
 
-        fragmentAdapter = new TopTabFragmentAdapter(fragmentManager, fragmentList , titles);
+        fragmentAdapter = new TopTabFragmentAdapter(fragmentManager, fragmentList, titles);
 
 
         viewPager.setAdapter(fragmentAdapter);
         toolbarTab.setupWithViewPager(viewPager);
         toolbarTab.setTabsFromPagerAdapter(fragmentAdapter);
         viewPager.setCurrentItem(0);
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(4);
+
+    }
+
+    @OnClick({R.id.tv_addGoodsTv, R.id.et_searchEdit})
+    public void onViewCLick(View view) {
+        switch (view.getId()) {
+            case R.id.tv_addGoodsTv:
+                Intent intent = new Intent();
+                intent.setClass(mContext, AddGoodsActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.et_searchEdit:
+                Intent intent1 = new Intent() ;
+                intent1.setClass(mContext , SearchActivity.class) ;
+                startActivity(intent1);
+                break;
+        }
 
     }
 

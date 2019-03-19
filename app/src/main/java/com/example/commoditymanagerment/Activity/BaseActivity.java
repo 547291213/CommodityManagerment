@@ -87,7 +87,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * 强制下线方法调用
      */

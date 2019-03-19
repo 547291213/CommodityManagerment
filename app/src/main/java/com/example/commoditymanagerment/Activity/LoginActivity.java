@@ -34,6 +34,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_NAME;
+
 public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.iv_backImage)
@@ -159,8 +161,8 @@ public class LoginActivity extends BaseActivity {
                     /**
                      * 记录当前登陆用户的用户名
                      */
-                    editor = loginActivity.getApplicationContext().getSharedPreferences("username" ,MODE_PRIVATE).edit() ;
-                    editor.putString("username" , loginActivity.tietUserEdit.getText().toString()) ;
+                    editor = loginActivity.getApplicationContext().getSharedPreferences(USER_NAME ,MODE_PRIVATE).edit() ;
+                    editor.putString(USER_NAME , loginActivity.tietUserEdit.getText().toString()) ;
                     editor.commit();
 
                     //启动到用户界面
