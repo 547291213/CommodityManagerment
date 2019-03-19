@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 public class ViewPagerSlide extends ViewPager {
 
@@ -35,7 +36,6 @@ public class ViewPagerSlide extends ViewPager {
         return isSlide;
     }
 
-
     /**
      * 点击事件是否处理
      *
@@ -46,4 +46,6 @@ public class ViewPagerSlide extends ViewPager {
     public boolean onTouchEvent(MotionEvent ev) {
         return isSlide;
     }
+
+
 }

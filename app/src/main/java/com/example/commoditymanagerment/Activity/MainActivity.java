@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.commoditymanagerment.DrawableView.BottomTabFragmentAdapter;
 import com.example.commoditymanagerment.DrawableView.IndexBottomLayout;
@@ -49,6 +48,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
         initView();
         initPagerAndFragment();
     }
@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity {
         //设置当前显示的页面
         vpIndexFragmentPager.setCurrentItem(0);
         //设置缓存
-        vpIndexFragmentPager.setOffscreenPageLimit(2);
+        vpIndexFragmentPager.setOffscreenPageLimit(1);
     }
 
     /**

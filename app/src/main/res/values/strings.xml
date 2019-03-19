@@ -4,6 +4,16 @@
     <string name="loading">正在加载</string>
 
 
+    <!--商品种类-->
+    <string name="category_hot">火爆</string>
+    <string name="category_new_product">新品</string>
+    <string name="category_promotion">促销</string>
+    <string name="category_activity">活动</string>
+    <string name="category_out_of_stock">缺货</string>
+
+
+
+    <!--首页底部自定义布局-->
     <declare-styleable name="IndexBottomLayout">
         <attr name="iconSrc" format="reference" />
         <attr name="iconWidth" format="dimension" />

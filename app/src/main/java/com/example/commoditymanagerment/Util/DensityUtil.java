@@ -13,6 +13,17 @@ public class DensityUtil {
 
 
     /**
+     * @param context 内容上下文
+     * @param dpValue dp值
+     * @return 对应屏幕分辨率的px值
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+
+    /**
      * 获取手机状态栏高度
      * @param context
      * @return 状态栏高度
