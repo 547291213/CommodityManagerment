@@ -22,7 +22,26 @@ public class StaticDataUtil {
     public static final int CHOOSE_ALBUM = 2;
 
     //读写权限
-    public static final int REQUEST_CODE_WRITE = 3 ;
+    public static final int REQUEST_CODE_WRITE = 3;
+
+
+    //获取商品信息成功
+    public static final int GET_GOODS_DATA_SUCCESS = 100;
+
+    //获取商品信息失败
+    public static final int GET_GOODS_DATA_ERROR = 101;
+
+    //用户拥有修改信息的权限
+    public static final int USER_HAVE_PERMISSION = 105;
+
+    //用户没有修改信息的权限
+    public static final int USER_NOT_HAVE_PERMISSION = 106;
+
+    //获取用户权限失败
+    public static final int GET_USER_PERMISSION_ERROR = 107;
+
+    //用户权限限制值
+    public static final int USER_PERMIISON_LIMIT = 1;
 
 
 }

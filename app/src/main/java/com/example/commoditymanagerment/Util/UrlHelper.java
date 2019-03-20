@@ -9,6 +9,10 @@ public class UrlHelper {
     public static final String REGISTER_URL = "http://192.168.43.85:8083/android/register?userName=" ;
     //    ?userName=123451&password=123451
 
+    //通过用户名获取用户信息
+    public static final String USER_INFO_URL = "http://192.168.43.85:8083/android//getUserInfo?userName=" ;
+    //123456
+
 
     //拉取商品列表的通用网址
     public static final String GOODS_LIST_URL = "http://192.168.43.85:8083/goods/page/getGoodsById?goodsCategory=" ;
