@@ -56,5 +56,11 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
     implementation 'org.jetbrains:annotations-java5:15.0'
 
+    //pickerView
+    implementation 'com.contrarywind:Android-PickerView:4.1.7'
+
+
+    //luban
+    implementation 'top.zibin:Luban:1.1.8'
 
 }

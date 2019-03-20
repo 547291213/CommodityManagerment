@@ -1,6 +1,7 @@
 package com.example.commoditymanagerment.MyApplication;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.example.commoditymanagerment.NetWork.HttpHelper;
 import com.example.commoditymanagerment.NetWork.OkHttpProcesser;
@@ -16,5 +17,9 @@ public class MyAapplication extends Application {
          */
         HttpHelper.initHttpProcesser(new OkHttpProcesser());
 
+    }
+
+    public Context getBaseContext(){
+        return this.getApplicationContext() ;
     }
 }

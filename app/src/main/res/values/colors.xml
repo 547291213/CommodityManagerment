@@ -22,4 +22,11 @@
     <color name="text_default_color">#888888</color>
     <color name="lightGreen">#7adfb8</color>
 
+
+
+    <!-- For settings framework -->
+    <color name="lighter_gray">#ddd</color>
+    <!-- A dark gray, equivalent to 0xffaaaaaa -->
+    <color name="darker_gray">#9E9EA8</color>
+
 </resources>

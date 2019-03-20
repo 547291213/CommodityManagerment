@@ -5,7 +5,7 @@ public class Goods {
     private String goodsName ;
     private int goodsCount ;
     private int goodsCategory ;
-    private String goodsImg ;
+    private Object goodsImg ;
     private String goodsDescribe ;
     private String lastModifyUser ;
     private String lastModifyTime ;
@@ -44,11 +44,11 @@ public class Goods {
         this.goodsCategory = goodsCategory;
     }
 
-    public String getGoodsImg() {
+    public Object getGoodsImg() {
         return goodsImg;
     }
 
-    public void setGoodsImg(String goodsImg) {
+    public void setGoodsImg(Object goodsImg) {
         this.goodsImg = goodsImg;
     }
 

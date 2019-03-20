@@ -3,6 +3,16 @@
     <string name="app_name_china">商品管理系统</string>
     <string name="loading">正在加载</string>
 
+    <!--商品信息-->
+    <string name="goods_name">商品名称</string>
+    <string name="goods_count">商品数目</string>
+    <string name="goods_describe">商品描述</string>
+    <string name="goods_category">商品种类</string>
+    <string name="goods_img">商品图片</string>
+    <string name="goods_original_price">商品原价</string>
+    <string name="goods_present_price">商品现价</string>
+
+
 
     <!--商品种类-->
     <string name="category_hot">火爆</string>
