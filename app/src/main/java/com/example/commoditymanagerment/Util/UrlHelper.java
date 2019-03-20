@@ -30,4 +30,9 @@ public class UrlHelper {
     //添加商品图片的通用网址
     public static final String GOODS_ADD_IMG_URL = "http://192.168.43.85:8083/goods/addGoods?" ;
 
+
+    //访问商品图片通用URL
+    public static final String GOODS_GET_IMG_URL = "http://192.168.43.85:8083/upload/" ;
+    //155308100531537.jpeg
+
 }

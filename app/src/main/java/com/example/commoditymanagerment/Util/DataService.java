@@ -19,7 +19,7 @@ import java.util.List;
 public class DataService {
 
     //每页显示的商品数目
-    public static final String ROW_COUNT = "2";
+    public static final String ROW_COUNT = "10";
     private GoodsGrid goods;
     private String url;
     private Context mContext;

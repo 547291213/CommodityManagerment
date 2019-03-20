@@ -45,11 +45,18 @@ import com.example.commoditymanagerment.ImgUpload.UploadImg;
 import com.example.commoditymanagerment.NetWork.HttpHelper;
 import com.example.commoditymanagerment.NetWork.NetCallBackResultBean;
 import com.example.commoditymanagerment.R;
+import com.example.commoditymanagerment.Util.FileUtil;
 import com.example.commoditymanagerment.Util.GoodsCategoryExchange;
 import com.example.commoditymanagerment.Util.TimeUtil;
+import com.example.commoditymanagerment.Util.UrlHelper;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +69,7 @@ import top.zibin.luban.OnCompressListener;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.CHOOSE_ALBUM;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_DATA_ERROR;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_DATA_SUCCESS;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_IMG_SUCCESS;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_USER_PERMISSION_ERROR;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_ID;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.OPEN_PHOTO;
@@ -148,7 +156,11 @@ public class GoodsDescribeActivity extends BaseActivity {
 
     private String userInfoUrl;
 
+    private String getImgUrl ;
+
     private int category;
+
+    private FileUtil fileUtils ;
 
 
     private boolean imgIsChanged = false;
@@ -175,6 +187,7 @@ public class GoodsDescribeActivity extends BaseActivity {
     /**
      * 初始默认的时候设计控件不可点击
      * 当用户点击了修改，并且用户拥有权限的时候，会重新调用该方法
+     *
      * @param userHavePermissions false不可修改  true可以修改
      */
     private void initEvent(boolean userHavePermissions) {
@@ -188,6 +201,10 @@ public class GoodsDescribeActivity extends BaseActivity {
 
         tvGoodsCategoryTv.setClickable(userHavePermissions);
         tvGoodsImgTv.setClickable(userHavePermissions);
+
+        if (userHavePermissions == true){
+            btAddGoodsBtn.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -649,6 +666,11 @@ public class GoodsDescribeActivity extends BaseActivity {
                     activity.etGoodsCountEt.setText(String.valueOf(activity.goods.getGoodsCount()));
                     activity.etGoodsDescribeEt.setText(activity.goods.getGoodsDescribe());
                     activity.tvGoodsCategoryTv.setText(GoodsCategoryExchange.exChange(activity.goods.getGoodsCategory()));
+
+                    activity.getImgUrl = UrlHelper.GOODS_GET_IMG_URL+activity.goods.getGoodsImg().toString() ;
+
+                    Log.d(TAG, "handleMessage: getImgUrl is " + activity.getImgUrl);
+                    activity.downLoad(activity.getImgUrl , activity.goods.getGoodsImg().toString());
                     break;
 
                 case GET_GOODS_DATA_ERROR:
@@ -667,11 +689,58 @@ public class GoodsDescribeActivity extends BaseActivity {
                 case GET_USER_PERMISSION_ERROR:
                     Toast.makeText(activity, "获取用户权限失败", Toast.LENGTH_SHORT).show();
                     break;
+
+                case GET_GOODS_IMG_SUCCESS:
+                    activity.sivGoodsImg.setImageBitmap(BitmapFactory.decodeFile(activity.fileUtils.getPath()+activity.goods.getGoodsImg().toString()));
+                    break;
+
                 default:
                     Toast.makeText(activity, "未知请求", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
+    }
+
+    /**
+     * 从服务器下载文件
+     *
+     * @param path     下载文件的地址
+     * @param FileName 文件名字
+     */
+    public void downLoad(final String path, final String FileName) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(path);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setReadTimeout(5000);
+                    con.setConnectTimeout(5000);
+                    con.setRequestProperty("Charset", "UTF-8");
+                    con.setRequestMethod("GET");
+                    if (con.getResponseCode() == 200) {
+                        InputStream is = con.getInputStream();//获取输入流
+                        FileOutputStream fileOutputStream = null;//文件输出流
+                        if (is != null) {
+                            fileUtils = new FileUtil();
+                            fileOutputStream = new FileOutputStream(fileUtils.createFile(FileName));//指定文件保存路径，代码看下一步
+                            byte[] buf = new byte[1024];
+                            int ch;
+                            while ((ch = is.read(buf)) != -1) {
+                                fileOutputStream.write(buf, 0, ch);//将获取到的流写入文件中
+                            }
+                        }
+                        if (fileOutputStream != null) {
+                            fileOutputStream.flush();
+                            fileOutputStream.close();
+                            myHandler.sendEmptyMessage(GET_GOODS_IMG_SUCCESS);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override

@@ -43,5 +43,8 @@ public class StaticDataUtil {
     //用户权限限制值
     public static final int USER_PERMIISON_LIMIT = 1;
 
+    //获取商品图片成功
+    public static final int GET_GOODS_IMG_SUCCESS = 1110 ;
+
 
 }
