@@ -37,6 +37,7 @@ import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.example.commoditymanagerment.Bean.Goods;
+import com.example.commoditymanagerment.Bean.ResultCode;
 import com.example.commoditymanagerment.Bean.User;
 import com.example.commoditymanagerment.DrawableView.BottomDialog;
 import com.example.commoditymanagerment.DrawableView.CustomDialog;
@@ -56,7 +57,6 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,12 +74,15 @@ import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_USER_PERM
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_ID;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.OPEN_PHOTO;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.REQUEST_CODE_WRITE;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.UPDATE_GOODS_DATA_ERROR;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.UPDATE_GOODS_DATA_SUCCESS;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_HAVE_PERMISSION;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_NAME;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_NOT_HAVE_PERMISSION;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_PERMIISON_LIMIT;
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_ADD_IMG_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_ADD_URL;
+import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_DATA_UPDATE_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_DESCRIBE_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.USER_INFO_URL;
 
@@ -138,33 +141,41 @@ public class GoodsDescribeActivity extends BaseActivity {
     ShapedImageView sivGoodsImg;
     @BindView(R.id.bt_addGoodsBtn)
     Button btAddGoodsBtn;
+    @BindView(R.id.bt_delGoodsBtn)
+    Button btDelGoodsBtn;
+    @BindView(R.id.ll_bottomBtnLlayout)
+    LinearLayout llBottomBtnLlayout;
 
+    //商品id
     private int goodsId;
-    private String url;
-    private MyHandler myHandler = new MyHandler(this);
+    //商品详情url
+    private String goodsDescribeUrl;
+    //商品类
     private Goods goods;
+    //商品种类
+    private int category;
+
+    private MyHandler myHandler = new MyHandler(this);
 
     private SharedPreferences preferences;
 
+    //相册或者相册拍照完成后图片文件存储相关属性
     private File imageFileDir;
-
     private Uri imageUri;
 
-    private String addDataUrl;
-
+    //更新数据的url
+    private String updateDataUrl;
+    //修改图片的url
     private String addImgUrl;
-
+    //用户信息url
     private String userInfoUrl;
-
-    private String getImgUrl ;
-
-    private int category;
-
-    private FileUtil fileUtils ;
-
-
+    //获取当前商品图片的url
+    private String getImgUrl;
+    //当前商品图片文件下载相关
+    private FileUtil fileUtils;
+    //当前商品的图片是否被修改
     private boolean imgIsChanged = false;
-
+    //当前用户是否拥有修改和删除商品信息的权限
     private boolean userHavePermissions = false;
 
     @Override
@@ -202,17 +213,21 @@ public class GoodsDescribeActivity extends BaseActivity {
         tvGoodsCategoryTv.setClickable(userHavePermissions);
         tvGoodsImgTv.setClickable(userHavePermissions);
 
-        if (userHavePermissions == true){
+        btAddGoodsBtn.setClickable(userHavePermissions);
+        btDelGoodsBtn.setClickable(userHavePermissions);
+
+        if (userHavePermissions == true) {
             btAddGoodsBtn.setVisibility(View.VISIBLE);
+            btDelGoodsBtn.setVisibility(View.VISIBLE);
         }
 
     }
 
     private void initData() {
 
-        url = GOODS_DESCRIBE_URL + goodsId;
+        goodsDescribeUrl = GOODS_DESCRIBE_URL + goodsId;
         HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
-        httpHelper.getRequest(url, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<Goods>() {
+        httpHelper.getRequest(goodsDescribeUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<Goods>() {
             @Override
             public void onSuccess(Goods goodsData) {
 
@@ -233,174 +248,270 @@ public class GoodsDescribeActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.tv_setBackText, R.id.bt_addGoodsBtn, R.id.tv_goodsCategoryTv, R.id.tv_goodsImgTv, R.id.tv_modifyTv})
+    @OnClick({R.id.tv_setBackText, R.id.bt_addGoodsBtn, R.id.tv_goodsCategoryTv, R.id.tv_goodsImgTv, R.id.tv_modifyTv, R.id.bt_delGoodsBtn})
     public void onViewClick(View view) {
         switch (view.getId()) {
 
+            case R.id.bt_delGoodsBtn:
+                delGoods();
+                break;
+
             case R.id.tv_modifyTv:
-                userInfoUrl = USER_INFO_URL + preferences.getString(USER_NAME, "");
-                //获取用户权限
-                HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
-                httpHelper.getRequest(userInfoUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<User>() {
-                    @Override
-                    public void onSuccess(User user) {
-                        if (user.getPermissions() >= USER_PERMIISON_LIMIT) {
-                            myHandler.sendEmptyMessage(USER_HAVE_PERMISSION);
-
-                        } else {
-                            myHandler.sendEmptyMessage(USER_NOT_HAVE_PERMISSION);
-                        }
-                    }
-
-                    @Override
-                    public void onSuccess(List result) {
-                        myHandler.sendEmptyMessage(GET_USER_PERMISSION_ERROR);
-                    }
-
-                    @Override
-                    public void Failed(String string) {
-                        myHandler.sendEmptyMessage(GET_USER_PERMISSION_ERROR);
-                    }
-                });
-
-
+                getUserPermissions();
                 break;
             case R.id.tv_setBackText:
-
                 finish();
                 break;
 
             case R.id.tv_goodsCategoryTv:
-
-                final ArrayList<String> goodsCategory = new ArrayList<>();
-                goodsCategory.add(getResources().getString(R.string.category_hot));
-                goodsCategory.add(getResources().getString(R.string.category_new_product));
-                goodsCategory.add(getResources().getString(R.string.category_promotion));
-                goodsCategory.add(getResources().getString(R.string.category_activity));
-                goodsCategory.add(getResources().getString(R.string.category_out_of_stock));
-                OptionsPickerView<String> pickerView = new OptionsPickerBuilder(this, new OnOptionsSelectListener() {
-                    @Override
-                    public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                        tvGoodsCategoryTv.setText(goodsCategory.get(options1));
-                        category = GoodsCategoryExchange.exChange(goodsCategory.get(options1));
-                    }
-                }).build();
-                pickerView.setPicker(goodsCategory);
-                pickerView.show();
+                modifyGoodsCategory();
                 break;
 
             case R.id.tv_goodsImgTv:
-
-
-                String item1 = "相册";
-                String item2 = "拍照";
-                String item3 = "取消";
-                final BottomDialog bottomDialog = new BottomDialog(GoodsDescribeActivity.this, item1, item2, item3);
-                bottomDialog.setBackground(Color.WHITE);
-                bottomDialog.setItem1TextColor(1, Color.BLACK);
-                bottomDialog.setItem1TextColor(2, Color.BLACK);
-                bottomDialog.setItem1TextColor(3, Color.BLACK);
-                bottomDialog.setItemClickListener(new BottomDialog.ItemClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public void onItem1Click(View view) {
-
-                        Toast.makeText(GoodsDescribeActivity.this, "相册", Toast.LENGTH_SHORT).show();
-                        bottomDialog.dismiss();
-
-                        /**
-                         * 相册权限
-                         */
-                        int check = GoodsDescribeActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                        if (check != PackageManager.PERMISSION_GRANTED) {
-                            //申请权限
-                            requestPermissions(new String[]{Manifest.permission.WRITE_APN_SETTINGS}, REQUEST_CODE_WRITE);
-                        } else {
-                            //打开相册
-                            openAlbum();
-                        }
-                    }
-
-                    @Override
-                    public void onItem2Click(View view) {
-
-                        Toast.makeText(GoodsDescribeActivity.this, "拍照", Toast.LENGTH_SHORT).show();
-                        bottomDialog.dismiss();
-                        imageUri = getImageUri();
-                        //启动程序
-                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivityForResult(intent, OPEN_PHOTO);
-
-                    }
-
-                    @Override
-                    public void onItem3Click(View view) {
-
-                        Toast.makeText(GoodsDescribeActivity.this, "取消", Toast.LENGTH_SHORT).show();
-                        bottomDialog.dismiss();
-                    }
-                });
-
-                bottomDialog.show();
+                openAlbumOrTakePhoto();
                 break;
 
             case R.id.bt_addGoodsBtn:
-                //1 数据判空以及合法性的判断
-                if (TextUtils.isEmpty(etGoodsNameEt.getText().toString())) {
-                    Toast.makeText(this, "商品名不能为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(etOriginalPriceEt.getText().toString())) {
-                    Toast.makeText(this, "商品原价不能为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(etPresentPriceEt.getText().toString())) {
-                    Toast.makeText(this, "商品现价不能为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(etGoodsCountEt.getText().toString())) {
-                    Toast.makeText(this, "商品数目不能为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (!canParseInt(etOriginalPriceEt.getText().toString())) {
-                    Toast.makeText(this, "商品原价类型错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (!canParseInt(etPresentPriceEt.getText().toString())) {
-                    Toast.makeText(this, "商品现价类型错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-
-                if (!canParseInt(etGoodsCountEt.getText().toString())) {
-                    Toast.makeText(this, "商品数目类型错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-
-                String lastModifyUser = preferences.getString(USER_NAME, "");
-
-                addDataUrl = GOODS_ADD_URL + etGoodsNameEt.getText().toString() + "&goodsCount=" +
-                        etGoodsCountEt.getText().toString() + "&goodsDescribe=" +
-                        etGoodsDescribeEt.getText().toString() + "&goodsCategory=" +
-                        category + "&lastModifyTime=" +
-                        TimeUtil.getNowDate() + "&goodsImg=" +
-                        imageFileDir.getName() + "&lastModifyUser=" +
-                        lastModifyUser + "&originalPrice=" +
-                        etOriginalPriceEt.getText().toString() + "&presentPrice=" +
-                        etPresentPriceEt.getText().toString();
-
-                addImgUrl = GOODS_ADD_IMG_URL;
-                Log.d(TAG, "onViewClick: addDataUrl is " + addDataUrl);
-                //上传
-                inputImageFile();
+                updateBtnClick();
                 break;
         }
 
+
+    }
+
+    /**
+     * 删除商品
+     */
+    private void delGoods() {
+        final BottomDialog bottomDialog = new BottomDialog(this, getResources().getString(R.string.goods_delete_tip),
+                getResources().getString(R.string.goods_delete_ok), getResources().getString(R.string.goods_delete_cancel));
+        bottomDialog.setBackground(Color.WHITE);
+        bottomDialog.setItem1TextColor(1, Color.GRAY);
+        bottomDialog.setItem1TextColor(2, Color.RED);
+        bottomDialog.setItem1TextColor(3, Color.BLACK);
+        bottomDialog.setItem1TextSize(1, 12);
+        bottomDialog.show();
+        bottomDialog.setCancelable(true);
+        bottomDialog.setCanceledOnTouchOutside(true);
+        bottomDialog.setItemClickListener(new BottomDialog.ItemClickListener() {
+
+
+            @Override
+            public void onItem1Click(View view) {
+
+                bottomDialog.dismiss();
+            }
+
+            @Override
+            public void onItem2Click(View view) {
+                Toast.makeText(GoodsDescribeActivity.this , "delete" ,Toast.LENGTH_SHORT).show();
+                bottomDialog.dismiss();
+            }
+
+            @Override
+            public void onItem3Click(View view) {
+                bottomDialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     * 获取用户权限
+     */
+    private void getUserPermissions(){
+        userInfoUrl = USER_INFO_URL + preferences.getString(USER_NAME, "");
+        //获取用户权限
+        HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
+        httpHelper.getRequest(userInfoUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<User>() {
+            @Override
+            public void onSuccess(User user) {
+                if (user.getPermissions() >= USER_PERMIISON_LIMIT) {
+                    myHandler.sendEmptyMessage(USER_HAVE_PERMISSION);
+
+                } else {
+                    myHandler.sendEmptyMessage(USER_NOT_HAVE_PERMISSION);
+                }
+            }
+
+            @Override
+            public void onSuccess(List result) {
+                myHandler.sendEmptyMessage(GET_USER_PERMISSION_ERROR);
+            }
+
+            @Override
+            public void Failed(String string) {
+                myHandler.sendEmptyMessage(GET_USER_PERMISSION_ERROR);
+            }
+        });
+
+    }
+
+    /**
+     * 修改商品种类
+     */
+    private void modifyGoodsCategory(){
+
+        final ArrayList<String> goodsCategory = new ArrayList<>();
+        goodsCategory.add(getResources().getString(R.string.category_hot));
+        goodsCategory.add(getResources().getString(R.string.category_new_product));
+        goodsCategory.add(getResources().getString(R.string.category_promotion));
+        goodsCategory.add(getResources().getString(R.string.category_activity));
+        goodsCategory.add(getResources().getString(R.string.category_out_of_stock));
+        OptionsPickerView<String> pickerView = new OptionsPickerBuilder(this, new OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                tvGoodsCategoryTv.setText(goodsCategory.get(options1));
+                category = GoodsCategoryExchange.exChange(goodsCategory.get(options1));
+            }
+        }).build();
+        pickerView.setPicker(goodsCategory);
+        pickerView.show();
+    }
+
+    /**
+     * 打开相册还是使用相机
+     */
+    private void openAlbumOrTakePhoto(){
+
+        String item1 = "相册";
+        String item2 = "拍照";
+        String item3 = "取消";
+        final BottomDialog bottomDialog = new BottomDialog(GoodsDescribeActivity.this, item1, item2, item3);
+        bottomDialog.setBackground(Color.WHITE);
+        bottomDialog.setItem1TextColor(1, Color.BLACK);
+        bottomDialog.setItem1TextColor(2, Color.BLACK);
+        bottomDialog.setItem1TextColor(3, Color.BLACK);
+        bottomDialog.setItemClickListener(new BottomDialog.ItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onItem1Click(View view) {
+
+                Toast.makeText(GoodsDescribeActivity.this, "相册", Toast.LENGTH_SHORT).show();
+                bottomDialog.dismiss();
+
+                /**
+                 * 相册权限
+                 */
+                int check = GoodsDescribeActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (check != PackageManager.PERMISSION_GRANTED) {
+                    //申请权限
+                    requestPermissions(new String[]{Manifest.permission.WRITE_APN_SETTINGS}, REQUEST_CODE_WRITE);
+                } else {
+                    //打开相册
+                    openAlbum();
+                }
+            }
+
+            @Override
+            public void onItem2Click(View view) {
+
+                Toast.makeText(GoodsDescribeActivity.this, "拍照", Toast.LENGTH_SHORT).show();
+                bottomDialog.dismiss();
+                imageUri = getImageUri();
+                //启动程序
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivityForResult(intent, OPEN_PHOTO);
+
+            }
+
+            @Override
+            public void onItem3Click(View view) {
+
+                Toast.makeText(GoodsDescribeActivity.this, "取消", Toast.LENGTH_SHORT).show();
+                bottomDialog.dismiss();
+            }
+        });
+
+        bottomDialog.show();
+    }
+
+    /**
+     * 修改按钮点击执行的修改操作
+     */
+    private void updateBtnClick(){
+        //1 数据判空以及合法性的判断
+        if (TextUtils.isEmpty(etGoodsNameEt.getText().toString())) {
+            Toast.makeText(this, "商品名不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(etOriginalPriceEt.getText().toString())) {
+            Toast.makeText(this, "商品原价不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(etPresentPriceEt.getText().toString())) {
+            Toast.makeText(this, "商品现价不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(etGoodsCountEt.getText().toString())) {
+            Toast.makeText(this, "商品数目不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!canParseInt(etOriginalPriceEt.getText().toString())) {
+            Toast.makeText(this, "商品原价类型错误", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!canParseInt(etPresentPriceEt.getText().toString())) {
+            Toast.makeText(this, "商品现价类型错误", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        if (!canParseInt(etGoodsCountEt.getText().toString())) {
+            Toast.makeText(this, "商品数目类型错误", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        String lastModifyUser = preferences.getString(USER_NAME, "");
+
+        addImgUrl = GOODS_ADD_IMG_URL;
+        /**
+         * 1 当商品图片发生修改的时候，需要先上传新的商品图片
+         * 等待图片上传成功之后，继续调用对数据修改的方法。
+         *
+         * 2 当商品图片没有发生修改的时候，直接调用对数据修改的方法。
+         */
+        if (imgIsChanged) {
+            /**
+             * goodsImg参数为现有文件名
+             */
+            updateDataUrl = GOODS_DATA_UPDATE_URL + goodsId + "&goodsName="
+                    + etGoodsNameEt.getText().toString() + "&goodsCount=" +
+                    etGoodsCountEt.getText().toString() + "&goodsDescribe=" +
+                    etGoodsDescribeEt.getText().toString() + "&goodsCategory=" +
+                    category + "&lastModifyTime=" +
+                    TimeUtil.getNowDate() + "&goodsImg=" +
+                    imageFileDir.getName() + "&lastModifyUser=" +
+                    lastModifyUser + "&originalPrice=" +
+                    etOriginalPriceEt.getText().toString() + "&presentPrice=" +
+                    etPresentPriceEt.getText().toString();
+            Log.d(TAG, "imgIsChanged = true: updateDataUrl is " + updateDataUrl);
+
+            //上传
+            inputImageFile();
+        } else {
+            /**
+             * goodsImg参数为原有参数
+             */
+            updateDataUrl = GOODS_DATA_UPDATE_URL + goodsId + "&goodsName="
+                    + etGoodsNameEt.getText().toString() + "&goodsCount=" +
+                    etGoodsCountEt.getText().toString() + "&goodsDescribe=" +
+                    etGoodsDescribeEt.getText().toString() + "&goodsCategory=" +
+                    category + "&lastModifyTime=" +
+                    TimeUtil.getNowDate() + "&goodsImg=" +
+                    goods.getGoodsImg().toString() + "&lastModifyUser=" +
+                    lastModifyUser + "&originalPrice=" +
+                    etOriginalPriceEt.getText().toString() + "&presentPrice=" +
+                    etPresentPriceEt.getText().toString();
+            //更新商品信息
+            updateGoodsData();
+            Log.d(TAG, "imgIsChanged = false: updateDataUrl is " + updateDataUrl);
+
+        }
 
     }
 
@@ -528,10 +639,12 @@ public class GoodsDescribeActivity extends BaseActivity {
             imageCompressed();
             //显示
             Bitmap bitmap = BitmapFactory.decodeFile(imageFileDir.toString());
+            //设置当前商品图片已经修改
+            imgIsChanged = true;
+
             if (bitmap != null)
                 setGoodsImg(bitmap);
         } else {
-
             Toast.makeText(this, "显示图片出错", Toast.LENGTH_SHORT).show();
         }
     }
@@ -602,10 +715,39 @@ public class GoodsDescribeActivity extends BaseActivity {
             }
 //            customDialog.show();
 
-            new GoodsDescribeActivity.UpLoad(imageFileDir, this).execute(addImgUrl);
+            new UpLoad(imageFileDir, this).execute(addImgUrl);
 
         }
 
+    }
+
+    /**
+     * 更新商品信息
+     */
+    public void updateGoodsData() {
+        HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
+        httpHelper.getRequest(updateDataUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<ResultCode>() {
+            @Override
+            public void onSuccess(ResultCode resultCode) {
+                if (resultCode.getCode().equals("0")) {
+                    myHandler.sendEmptyMessage(UPDATE_GOODS_DATA_SUCCESS);
+                } else {
+                    myHandler.sendEmptyMessage(UPDATE_GOODS_DATA_ERROR);
+                }
+            }
+
+            @Override
+            public void onSuccess(List result) {
+                myHandler.sendEmptyMessage(UPDATE_GOODS_DATA_ERROR);
+            }
+
+            @Override
+            public void Failed(String string) {
+                myHandler.sendEmptyMessage(UPDATE_GOODS_DATA_ERROR);
+
+            }
+
+        });
     }
 
     public class UpLoad extends AsyncTask<String, Void, String> {
@@ -627,7 +769,7 @@ public class GoodsDescribeActivity extends BaseActivity {
             super.onPostExecute(s);
             if (s != null) {
 
-                myHandler = new GoodsDescribeActivity.MyHandler(GoodsDescribeActivity.this);
+                myHandler = new MyHandler(GoodsDescribeActivity.this);
                 myHandler.sendEmptyMessage(0);
             } else {
                 Toast.makeText(mContext, "上传失败", Toast.LENGTH_SHORT).show();
@@ -655,7 +797,9 @@ public class GoodsDescribeActivity extends BaseActivity {
 
             switch (msg.what) {
                 case 0:
-                    Toast.makeText(activity, "上传图片成功", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(activity, "上传图片成功", Toast.LENGTH_SHORT).show();
+                    //上传数据
+                    activity.updateGoodsData();
                     break;
 
                 case GET_GOODS_DATA_SUCCESS:
@@ -667,10 +811,10 @@ public class GoodsDescribeActivity extends BaseActivity {
                     activity.etGoodsDescribeEt.setText(activity.goods.getGoodsDescribe());
                     activity.tvGoodsCategoryTv.setText(GoodsCategoryExchange.exChange(activity.goods.getGoodsCategory()));
 
-                    activity.getImgUrl = UrlHelper.GOODS_GET_IMG_URL+activity.goods.getGoodsImg().toString() ;
+                    activity.getImgUrl = UrlHelper.GOODS_GET_IMG_URL + activity.goods.getGoodsImg().toString();
 
                     Log.d(TAG, "handleMessage: getImgUrl is " + activity.getImgUrl);
-                    activity.downLoad(activity.getImgUrl , activity.goods.getGoodsImg().toString());
+                    activity.downLoad(activity.getImgUrl, activity.goods.getGoodsImg().toString());
                     break;
 
                 case GET_GOODS_DATA_ERROR:
@@ -691,9 +835,17 @@ public class GoodsDescribeActivity extends BaseActivity {
                     break;
 
                 case GET_GOODS_IMG_SUCCESS:
-                    activity.sivGoodsImg.setImageBitmap(BitmapFactory.decodeFile(activity.fileUtils.getPath()+activity.goods.getGoodsImg().toString()));
+                    activity.sivGoodsImg.setImageBitmap(BitmapFactory.decodeFile(activity.fileUtils.getPath() + activity.goods.getGoodsImg().toString()));
                     break;
 
+                case UPDATE_GOODS_DATA_ERROR:
+                    Toast.makeText(activity, "更新商品信息失败", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case UPDATE_GOODS_DATA_SUCCESS:
+                    Toast.makeText(activity, "更新商品信息成功", Toast.LENGTH_SHORT).show();
+                    activity.finish();
+                    break;
                 default:
                     Toast.makeText(activity, "未知请求", Toast.LENGTH_SHORT).show();
                     break;
@@ -744,7 +896,8 @@ public class GoodsDescribeActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {

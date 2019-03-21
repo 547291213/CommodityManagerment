@@ -31,6 +31,12 @@ public class StaticDataUtil {
     //获取商品信息失败
     public static final int GET_GOODS_DATA_ERROR = 101;
 
+    //修改商品信息成功
+    public static final int UPDATE_GOODS_DATA_SUCCESS = 102 ;
+
+    //修改商品信息失败
+    public static final int UPDATE_GOODS_DATA_ERROR = 103 ;
+
     //用户拥有修改信息的权限
     public static final int USER_HAVE_PERMISSION = 105;
 
@@ -45,6 +51,7 @@ public class StaticDataUtil {
 
     //获取商品图片成功
     public static final int GET_GOODS_IMG_SUCCESS = 1110 ;
+
 
 
 }

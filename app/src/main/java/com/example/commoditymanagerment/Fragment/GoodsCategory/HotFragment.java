@@ -111,9 +111,9 @@ public class HotFragment extends Fragment {
                 GoodsListView goodsListView = (GoodsListView) parent;
                 HashMap<String, Object> map = (HashMap<String, Object>) goodsListView.getItemAtPosition(position);
                 Log.d(TAG, "onItemClick: click :" + position + " id is " + map.get("goodsId"));
-                Intent intent = new Intent() ;
-                intent.putExtra(GOODS_ID , (Integer) map.get(GOODS_ID)) ;
-                intent.setClass(mContext , GoodsDescribeActivity.class) ;
+                Intent intent = new Intent();
+                intent.putExtra(GOODS_ID, (Integer) map.get(GOODS_ID));
+                intent.setClass(mContext, GoodsDescribeActivity.class);
                 startActivity(intent);
             }
         });
@@ -130,22 +130,20 @@ public class HotFragment extends Fragment {
                 //得到listView的最后一项的显示id
                 int lastItemPosition = glvHotGoodsList.getLastVisiblePosition();
                 //判断用户是否滑动到最后一项，因为索引值从零开始所以要加上1
-                if ((lastItemPosition + 1) == totalItemCount && loadFinish == true){
+                if ((lastItemPosition + 1) == totalItemCount && loadFinish == true) {
 
                     Log.d(TAG, "onScroll: " + lastItemPosition + "   " + totalItemCount + "   "
-                            + totalCount + "  nextPage=" + nextPage );
+                            + totalCount + "  nextPage=" + nextPage);
                     //设置状态为 数据尚在加载
 
-                    loadFinish = false ;
+                    loadFinish = false;
                     //如果数据尚未加载完成
                     //访问网络请求成功之后，nextPage会自增，
                     //实际nextPage指向的是下一页，所以这里需要-1
-                    if((nextPage-1)*Integer.valueOf(ROW_COUNT) < totalCount){
+                    if ((nextPage - 1) * Integer.valueOf(ROW_COUNT) < totalCount) {
                         glvHotGoodsList.setFooterViewShow();
-                        new Thread(new Runnable()
-                        {
-                            public void run()
-                            {
+                        new Thread(new Runnable() {
+                            public void run() {
                                 try {
                                     Thread.sleep(2000);
                                     getData(HOT_CATEGORY, nextPage);
@@ -237,17 +235,18 @@ public class HotFragment extends Fragment {
                     fragment.glvHotGoodsList.setAdapter(fragment.adapter);
 //                    fragment.adapter.notifyDataSetChanged();
 
+                    //隐藏底部加载栏,并将选中当前页的第一项数据
+                    fragment.glvHotGoodsList.setFooterViewHide((fragment.nextPage - 1) * Integer.valueOf(ROW_COUNT) + 1);
+
                     //当前所请求界面+1
                     fragment.nextPage++;
 
                     //更新当前总类商品的总个数
                     fragment.totalCount = fragment.goodsGrid.getTotal();
 
-                    //隐藏底部加载栏
-                    fragment.glvHotGoodsList.setFooterViewHide();
 
                     //数据加载完成
-                    fragment.loadFinish = true ;
+                    fragment.loadFinish = true;
                     break;
 
                 default:

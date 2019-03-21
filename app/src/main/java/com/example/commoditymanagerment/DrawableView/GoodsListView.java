@@ -73,13 +73,13 @@ public class GoodsListView extends ListView {
         footerImg.setVisibility(View.VISIBLE);
         AnimationDrawable drawable = (AnimationDrawable) footerImg.getDrawable();
         drawable.start();
-        setSelection(1);
+
     }
 
-    public void setFooterViewHide() {
+    public void setFooterViewHide(int selection) {
         footerLayout.setVisibility(GONE);
         footerImg.setVisibility(View.GONE);
-
+        setSelection(selection);
     }
 
     public void setHeaderViewShow(){

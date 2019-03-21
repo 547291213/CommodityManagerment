@@ -35,4 +35,11 @@ public class UrlHelper {
     public static final String GOODS_GET_IMG_URL = "http://192.168.43.85:8083/upload/" ;
     //155308100531537.jpeg
 
+    //修改商品信息的通用URL
+    public static final String GOODS_DATA_UPDATE_URL = "http://192.168.43.85:8083/goods/updateGoods?goodsId=" ;
+    //1&goodsName=%E7%BA%AF%E7%89%9B%E5%A5%B6&goodsCount=24
+    // &goodsDescribe=%E4%BC%8A%E5%88%A9%E7%BA%AF%E7%89%9B%E5%A5%B6&goodsCategory=0
+    // &goodsImg=heheda&lastModifyTime=2019-03-18%2020:26&lastModifyUser=kefeng&originalPrice=68&presentPrice=60"
+
+
 }

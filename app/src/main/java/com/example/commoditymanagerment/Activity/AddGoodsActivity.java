@@ -38,6 +38,7 @@ import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.example.commoditymanagerment.Bean.ResultCode;
+import com.example.commoditymanagerment.Bean.User;
 import com.example.commoditymanagerment.DrawableView.BottomDialog;
 import com.example.commoditymanagerment.DrawableView.CustomDialog;
 import com.example.commoditymanagerment.DrawableView.ShapedImageView;
@@ -125,18 +126,25 @@ public class AddGoodsActivity extends BaseActivity {
     Button btAddGoodsBtn;
 
 
+
+    //相册或者拍照完成后图片的文件
     private File imageFileDir;
 
+    //相册或者拍照完成后图片的uri
     private Uri imageUri;
 
+    //添加数据的网络请求地址
     private String addDataUrl;
 
+    //添加图片的网络请求地址
     private String addImgUrl;
 
+    //商品所属种类，显示的是string类型，但是实际存储的是int值，需要做转换
     private int category;
 
     private static final String TAG = "AddGoodsActivity";
 
+    //获取当前的用户名，用以数据库中字段：最后修改的用户
     private SharedPreferences preferences;
 
     @Override
@@ -267,6 +275,10 @@ public class AddGoodsActivity extends BaseActivity {
                     return;
                 }
 
+                if (imageFileDir == null){
+                    Toast.makeText(this, "商品图片不能为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 preferences = getSharedPreferences(USER_NAME, MODE_PRIVATE);
                 String lastModifyUser = preferences.getString(USER_NAME, "");
