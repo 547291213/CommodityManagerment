@@ -86,6 +86,16 @@ public class MainActivity extends BaseActivity {
         vpIndexFragmentPager.setOffscreenPageLimit(1);
     }
 
+    private RefreshListener refreshListener ;
+
+    public void setRefreshData(RefreshListener refreshListener) {
+        this.refreshListener = refreshListener;
+    }
+
+    public interface RefreshListener{
+        public void onRefreshData() ;
+    }
+
     /**
      * 底部布局的点击事件监听
      *
@@ -107,6 +117,12 @@ public class MainActivity extends BaseActivity {
 
                     //页面切换
                     vpIndexFragmentPager.setCurrentItem(0);
+                    /**
+                     * 做数据的刷新处理
+                     */
+                    if (refreshListener != null){
+                        refreshListener.onRefreshData() ;
+                    }
                 }
                 break;
 
@@ -226,4 +242,6 @@ public class MainActivity extends BaseActivity {
                 break;
         }
     }
+
+
 }

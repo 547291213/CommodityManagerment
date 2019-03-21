@@ -264,6 +264,7 @@ public class HotFragment extends CategoryFragment {
         }
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
