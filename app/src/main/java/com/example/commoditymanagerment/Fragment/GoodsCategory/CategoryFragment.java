@@ -15,8 +15,4 @@ public abstract class CategoryFragment extends Fragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-
-    abstract public int getScrollerState() ;
-
-    abstract public void setScrollerState( int scrollerState) ;
 }

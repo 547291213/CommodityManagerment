@@ -49,4 +49,7 @@ public class UrlHelper {
     //10
 
 
+    public static final String GOODS_SEARCH_LIST_URL = "http://192.168.43.85:8083/goods/page/search?data=" ;
+    //1&current=1&rowCount=20
+
 }

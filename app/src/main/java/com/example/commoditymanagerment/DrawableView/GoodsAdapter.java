@@ -29,9 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_FLING;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_IMG_SUCCESS;
-import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_USER_PERMISSION_ERROR;
 
 public class GoodsAdapter extends BaseAdapter {
 
@@ -40,17 +38,15 @@ public class GoodsAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater layoutInflater;
     private String goodsImgUrl;
-    private CategoryFragment fragment;
-
     private static final String TAG = "GoodsAdapter";
 
-    public GoodsAdapter(List<Goods> goods, Context context, Fragment fragment) {
+    public GoodsAdapter(List<Goods> goods, Context context) {
 
         goodsList = goods;
         mContext = context;
-        this.fragment = (CategoryFragment) fragment;
         layoutInflater = LayoutInflater.from(mContext);
     }
+
 
     @Override
     public int getCount() {

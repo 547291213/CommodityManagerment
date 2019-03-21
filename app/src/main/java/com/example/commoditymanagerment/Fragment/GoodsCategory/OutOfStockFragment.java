@@ -44,7 +44,6 @@ import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_ID;
 public class OutOfStockFragment extends CategoryFragment {
 
 
-
     @BindView(R.id.glv_outStockGoodsList)
     GoodsListView glvOutStockGoodsList;
 
@@ -84,7 +83,7 @@ public class OutOfStockFragment extends CategoryFragment {
     private boolean loadFinish = false;
 
     //设置ListView的滑动状态。默认为静止
-    private int scrollerState = SCROLL_STATE_IDLE;
+//    private int scrollerState = SCROLL_STATE_IDLE;
 
     @Nullable
     @Override
@@ -98,16 +97,6 @@ public class OutOfStockFragment extends CategoryFragment {
         //创建的碎片的时候执行以此初始化操作
         initData();
         return mView;
-    }
-
-    @Override
-    public int getScrollerState() {
-        return scrollerState;
-    }
-
-    @Override
-    public void setScrollerState(int scrollerState) {
-        this.scrollerState = scrollerState;
     }
 
     private void initData() {
@@ -131,19 +120,6 @@ public class OutOfStockFragment extends CategoryFragment {
             @Override
             public void onScrollStateChanged(AbsListView view, int state) {
 
-                switch (state) {
-                    case SCROLL_STATE_FLING:
-                        setScrollerState(state);
-                        break;
-
-                    case SCROLL_STATE_IDLE:
-                        setScrollerState(state);
-                        break;
-
-                    case SCROLL_STATE_TOUCH_SCROLL:
-                        setScrollerState(state);
-                        break;
-                }
             }
 
             @Override
@@ -190,7 +166,7 @@ public class OutOfStockFragment extends CategoryFragment {
      * 如果这里直接返回列表数据，返回为null
      *
      * @param goodsCategory 商品种类
-     * @param current 当前页面
+     * @param current       当前页面
      * @return
      */
     public void getData(final int goodsCategory, int current) {
@@ -245,7 +221,7 @@ public class OutOfStockFragment extends CategoryFragment {
                     }
 
                     //初始化和设置适配器
-                    fragment.adapter = new GoodsAdapter(fragment.goodsList, fragment.getContext(), fragment);
+                    fragment.adapter = new GoodsAdapter(fragment.goodsList, fragment.getContext());
                     fragment.glvOutStockGoodsList.setAdapter(fragment.adapter);
 
                     //隐藏底部加载栏,并将选中当前页的第一项数据
