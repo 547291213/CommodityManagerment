@@ -15,7 +15,9 @@ import java.util.List;
 
 /**
  * 拉取商品数据
+ * 废弃
  */
+@Deprecated
 public class DataService {
 
     //每页显示的商品数目

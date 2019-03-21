@@ -5,23 +5,28 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.commoditymanagerment.Bean.RefreshMsg;
 import com.example.commoditymanagerment.DrawableView.BottomTabFragmentAdapter;
 import com.example.commoditymanagerment.DrawableView.IndexBottomLayout;
 import com.example.commoditymanagerment.DrawableView.ViewPagerSlide;
 import com.example.commoditymanagerment.Fragment.HomepageFragment;
 import com.example.commoditymanagerment.Fragment.PersonalCenterFragment;
 import com.example.commoditymanagerment.R;
+import com.example.commoditymanagerment.RxBus.RxBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import static com.example.commoditymanagerment.Util.StaticDataUtil.ADD_GOODS_ACTIVITY_REQUEST_CODE;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE;
@@ -48,6 +53,8 @@ public class MainActivity extends BaseActivity {
     private List<Fragment> fragmentList;
     private FragmentManager fragmentManager;
 
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +62,62 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
 
+        initRxBus() ;
         initView();
         initPagerAndFragment();
+    }
+
+
+    /**
+     * 以MainActivity界面为A , B为HomepageFragment,
+     * C为HotFragment，D为NewProductFragment，E为PromotionFragment，F为ActivityFragment，G为OutOfStockFragment
+     * H为CategoryFragment
+     *
+     * 需要实现的功能：
+     * 点击主页（A）刷新按钮后，通知到当前显示的商品列表界面（C,D,E,F,G 其中一个），使其重新拉取数据，等到数据拉取完成之后，回到主页（A），修改主页布局
+     *
+     *
+     * 实现逻辑：
+     * （1） A中定义接口，B中继承和实现接口，表现为A中接口回调，通知到B，
+     * （2）B中拥有{C,D,E,F,G}五个界面，且{C,D,E,F,G}五个界面拥有公共的父类H，那么用多态（动态绑定）的方式来实现调用当前具体显示界面的数据刷新操作，即：
+     *     H中定义抽象方法onRefreshData，{C,D,E,F,G}中分别继承实现该方法，
+     * （3）在B实现A中接口的方法中完成 ：1，用H接收当前界面{C,D,E,F,G五个之中的某一个}   2，使用H.onRefreshData()来实现具体调用 ;
+     * （4）{C,D,E,F,G}中分别实现onRefreshData()方法，完成数据的刷新
+     * （5）当数据刷新之后，使用RXBus（类似广播的一种机制），通知A，修改A界面。
+     *
+     *
+     */
+    private void initRxBus(){
+        RxBus.getInstance().tObservable(RefreshMsg.class)
+        .subscribe(new Observer<RefreshMsg>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(RefreshMsg refreshMsg) {
+                //将其他两个状态设置为未选中状态
+                setIbIndexBottomCheckState_UnChecked(ibIndexBottomPersonalcenter);
+                setIbIndexBottomCheckState_UnChecked(ibIndexBottomRefresh);
+                //将当前View设置为选中状态
+                setIbIndexBottomCheckState_Checked(ibIndexBottomHomepage);
+                //页面切换
+//                vpIndexFragmentPager.setCurrentItem(0);
+                setIbIndexBottomImage(ibIndexBottomRefresh,ibIndexBottomHomepage,ibIndexBottomPersonalcenter) ;
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Toast.makeText(MainActivity.this , "刷新界面失败",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void initView() {
@@ -71,7 +132,6 @@ public class MainActivity extends BaseActivity {
         personalCenterFragment = new PersonalCenterFragment();
         fragmentList.add(homepageFragment);
         fragmentList.add(personalCenterFragment);
-
         fragmentManager = getSupportFragmentManager();
 
         bottomTabFragmentAdapter = new BottomTabFragmentAdapter(fragmentManager, fragmentList);
@@ -84,6 +144,16 @@ public class MainActivity extends BaseActivity {
         vpIndexFragmentPager.setCurrentItem(0);
         //设置缓存
         vpIndexFragmentPager.setOffscreenPageLimit(1);
+    }
+
+    private RefreshListener refreshListener ;
+
+    public void setRefreshData(RefreshListener refreshListener) {
+        this.refreshListener = refreshListener;
+    }
+
+    public interface RefreshListener{
+        public void onRefreshData() ;
     }
 
     /**
@@ -107,6 +177,14 @@ public class MainActivity extends BaseActivity {
 
                     //页面切换
                     vpIndexFragmentPager.setCurrentItem(0);
+                    /**
+                     * 做数据的刷新处理
+                     */
+                    if (refreshListener != null){
+                        refreshListener.onRefreshData() ;
+                    }else {
+                        Log.d(TAG, "bottomLayoutClick: refresh listener is null");
+                    }
                 }
                 break;
 
@@ -226,4 +304,6 @@ public class MainActivity extends BaseActivity {
                 break;
         }
     }
+
+
 }

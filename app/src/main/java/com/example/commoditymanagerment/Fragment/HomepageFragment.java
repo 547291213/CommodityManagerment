@@ -22,12 +22,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.commoditymanagerment.Activity.AddGoodsActivity;
+import com.example.commoditymanagerment.Activity.MainActivity;
 import com.example.commoditymanagerment.Activity.SearchActivity;
 import com.example.commoditymanagerment.Bean.ResultCode;
 import com.example.commoditymanagerment.Bean.User;
 import com.example.commoditymanagerment.DrawableView.InnerViewPager;
 import com.example.commoditymanagerment.DrawableView.TopTabFragmentAdapter;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.ActivityFragment;
+import com.example.commoditymanagerment.Fragment.GoodsCategory.CategoryFragment;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.HotFragment;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.NewProductFragment;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.OutOfStockFragment;
@@ -50,7 +52,7 @@ import static com.example.commoditymanagerment.Util.StaticDataUtil.ADD_GOODS_ACT
 import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_NAME;
 import static com.example.commoditymanagerment.Util.UrlHelper.USER_INFO_URL;
 
-public class HomepageFragment extends Fragment {
+public class HomepageFragment extends Fragment implements MainActivity.RefreshListener {
 
     @BindView(R.id.tv_setBackText)
     TextView tvSetBackText;
@@ -100,6 +102,9 @@ public class HomepageFragment extends Fragment {
         metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
+        if (this instanceof MainActivity.RefreshListener) {
+            ((MainActivity) getContext()).setRefreshData(this);
+        }
         initIndexTitleLayout();
         setEtSearchEdit();
         initViewPager();
@@ -224,6 +229,16 @@ public class HomepageFragment extends Fragment {
 
     }
 
+    /**
+     * 刷新操作的接口回调
+     * 去子Fragment中实现具体的刷新操作
+     */
+    @Override
+    public void onRefreshData() {
+        CategoryFragment categoryFragment = (CategoryFragment) fragmentList.get(viewPager.getCurrentItem());
+        categoryFragment.onRefreshData();
+    }
+
     private static class MyHandler extends Handler {
 
         private WeakReference<HomepageFragment> weakReference;
@@ -245,7 +260,7 @@ public class HomepageFragment extends Fragment {
                     if (fragment.user.getPermissions() >= 1) {
                         Intent intent = new Intent();
                         intent.setClass(fragment.mContext, AddGoodsActivity.class);
-                        fragment.mActivity.startActivityForResult(intent , ADD_GOODS_ACTIVITY_REQUEST_CODE);
+                        fragment.mActivity.startActivityForResult(intent, ADD_GOODS_ACTIVITY_REQUEST_CODE);
                     } else {
                         Toast.makeText(fragment.mContext, "抱歉您所在的用户组没有该权限", Toast.LENGTH_SHORT).show();
                     }

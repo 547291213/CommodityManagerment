@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +21,13 @@ import com.example.commoditymanagerment.Activity.GoodsDescribeActivity;
 import com.example.commoditymanagerment.Activity.MainActivity;
 import com.example.commoditymanagerment.Bean.Goods;
 import com.example.commoditymanagerment.Bean.GoodsGrid;
+import com.example.commoditymanagerment.Bean.RefreshMsg;
 import com.example.commoditymanagerment.DrawableView.GoodsAdapter;
 import com.example.commoditymanagerment.DrawableView.GoodsListView;
 import com.example.commoditymanagerment.NetWork.HttpHelper;
 import com.example.commoditymanagerment.NetWork.NetCallBackResultBean;
 import com.example.commoditymanagerment.R;
+import com.example.commoditymanagerment.RxBus.RxBus;
 import com.example.commoditymanagerment.Util.UrlHelper;
 
 import java.lang.ref.WeakReference;
@@ -36,7 +38,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 import static com.example.commoditymanagerment.Util.DataService.ROW_COUNT;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_ID;
@@ -48,6 +49,8 @@ public class NewProductFragment extends CategoryFragment {
     GoodsListView glvNewGoodsList;
 
     Unbinder unbinder;
+    @BindView(R.id.srl_refrshLayout)
+    SwipeRefreshLayout srlRefrshLayout;
     private View mView;
     private Context mContext;
     private Activity mActivity;
@@ -70,7 +73,7 @@ public class NewProductFragment extends CategoryFragment {
     //当前商品种类
     private static final int NEW_CATEGORY = 1;
 
-    private static final String TAG = "HotFragment";
+    private static final String TAG = "NewProductFragment";
 
     //网络请求地址
     private String goodsListUrl;
@@ -96,6 +99,11 @@ public class NewProductFragment extends CategoryFragment {
         unbinder = ButterKnife.bind(this, mView);
         //创建的碎片的时候执行以此初始化操作
         initData();
+
+        //设置为不能刷新
+        srlRefrshLayout.setEnabled(false);
+        //设置刷新旋转样式
+        srlRefrshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
         return mView;
     }
 
@@ -139,7 +147,12 @@ public class NewProductFragment extends CategoryFragment {
                     //访问网络请求成功之后，nextPage会自增，
                     //实际nextPage指向的是下一页，所以这里需要-1
                     if ((nextPage - 1) * Integer.valueOf(ROW_COUNT) < totalCount) {
-                        glvNewGoodsList.setFooterViewShow();
+                        /**
+                         * 如果是由主界面发起的数据刷新，则不显示footerView
+                         */
+                        if (refreshDataByActivity != true){
+                            glvNewGoodsList.setFooterViewShow();
+                        }
                         new Thread(new Runnable() {
                             public void run() {
                                 try {
@@ -194,6 +207,7 @@ public class NewProductFragment extends CategoryFragment {
                 });
     }
 
+
     private static class MyHandler extends Handler {
 
         private WeakReference<NewProductFragment> weakReference;
@@ -235,6 +249,18 @@ public class NewProductFragment extends CategoryFragment {
 
                     //数据加载完成
                     fragment.loadFinish = true;
+
+
+                    if (fragment.refreshDataByActivity) {
+                        //设为默认值
+                        fragment.refreshDataByActivity = false;
+                        //设置状态为刷新完成
+                        fragment.srlRefrshLayout.setRefreshing(false);
+                        //发送广播通知刷新
+                        RxBus.getInstance().post(new RefreshMsg(NEW_CATEGORY));
+                        Toast.makeText(fragment.mContext, "刷新成功", Toast.LENGTH_SHORT).show();
+                    }
+
                     break;
 
                 default:
@@ -263,6 +289,37 @@ public class NewProductFragment extends CategoryFragment {
 
         }
     }
+
+
+
+    private boolean refreshDataByActivity = false;
+
+    @Override
+    public void onRefreshData() {
+        refreshDataByActivity = true;
+        refreshData();
+    }
+
+    public void refreshData() {
+        srlRefrshLayout.setRefreshing(true);
+        //数据初始化
+        nextPage = 1;
+        /**
+         * 将原有数据清空
+         */
+        if (goodsList != null) {
+            goodsList.clear();
+        }
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+        if (glvNewGoodsList != null) {
+            glvNewGoodsList.setFooterViewHide(0);
+        }
+//        getData(HOT_CATEGORY, nextPage);
+
+    }
+
 
     @Override
     public void onDestroyView() {

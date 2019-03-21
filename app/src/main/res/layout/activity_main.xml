@@ -32,8 +32,8 @@
             android:gravity="center"
             android:onClick="bottomLayoutClick"
             app:iconSrc="@drawable/ic_refresh_gray_48"
-            app:iconHeight="50dp"
-            app:iconWidth="50dp"
+            app:iconHeight="30dp"
+            app:iconWidth="30dp"
             app:title="刷新"
             >
 
@@ -48,8 +48,8 @@
             android:gravity="center"
             android:onClick="bottomLayoutClick"
             app:iconSrc="@drawable/ic_homepage_blue_48"
-            app:iconHeight="50dp"
-            app:iconWidth="50dp"
+            app:iconHeight="30dp"
+            app:iconWidth="30dp"
             app:title="主页">
 
         </com.example.commoditymanagerment.DrawableView.IndexBottomLayout>
@@ -62,8 +62,8 @@
             android:gravity="center"
             android:onClick="bottomLayoutClick"
             app:iconSrc="@drawable/ic_personalcenter_gray_48"
-            app:iconHeight="50dp"
-            app:iconWidth="50dp"
+            app:iconHeight="30dp"
+            app:iconWidth="30dp"
             app:title="个人">
 
 
