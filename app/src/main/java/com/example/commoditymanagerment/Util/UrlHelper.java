@@ -41,5 +41,9 @@ public class UrlHelper {
     // &goodsDescribe=%E4%BC%8A%E5%88%A9%E7%BA%AF%E7%89%9B%E5%A5%B6&goodsCategory=0
     // &goodsImg=heheda&lastModifyTime=2019-03-18%2020:26&lastModifyUser=kefeng&originalPrice=68&presentPrice=60"
 
+    //删除商品通用URL
+    public static final String GOODS_DELETE_URL = "http://192.168.43.85:8083/goods/delGoods?goodsId=" ;
+    //10
+
 
 }

@@ -95,7 +95,6 @@ public class HotFragment extends Fragment {
         mContext = getContext();
         mActivity = getActivity();
         unbinder = ButterKnife.bind(this, mView);
-        initData();
         return mView;
     }
 
@@ -110,7 +109,7 @@ public class HotFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 GoodsListView goodsListView = (GoodsListView) parent;
                 HashMap<String, Object> map = (HashMap<String, Object>) goodsListView.getItemAtPosition(position);
-                Log.d(TAG, "onItemClick: click :" + position + " id is " + map.get("goodsId"));
+//                Log.d(TAG, "onItemClick: click :" + position + " id is " + map.get("goodsId"));
                 Intent intent = new Intent();
                 intent.putExtra(GOODS_ID, (Integer) map.get(GOODS_ID));
                 intent.setClass(mContext, GoodsDescribeActivity.class);
@@ -254,6 +253,23 @@ public class HotFragment extends Fragment {
                     break;
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //数据初始化
+        nextPage =1 ;
+
+        /**
+         * 将原有数据清空
+         */
+        if (goodsDataList != null){
+            goodsDataList.clear();
+        }
+        initData();
+
+        Log.d(TAG, "onStart: ");
     }
 
     @Override

@@ -46,6 +46,12 @@ public class StaticDataUtil {
     //获取用户权限失败
     public static final int GET_USER_PERMISSION_ERROR = 107;
 
+    //删除商品成功
+    public static final int DELETE_GOODS_SUCESS = 108 ;
+
+    //删除商品失败
+    public static final int DELETE_GOODS_ERROR = 109 ;
+
     //用户权限限制值
     public static final int USER_PERMIISON_LIMIT = 1;
 

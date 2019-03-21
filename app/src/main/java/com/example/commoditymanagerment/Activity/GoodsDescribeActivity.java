@@ -67,6 +67,8 @@ import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
 import static com.example.commoditymanagerment.Util.StaticDataUtil.CHOOSE_ALBUM;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.DELETE_GOODS_ERROR;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.DELETE_GOODS_SUCESS;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_DATA_ERROR;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_DATA_SUCCESS;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GET_GOODS_IMG_SUCCESS;
@@ -83,6 +85,7 @@ import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_PERMIISO
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_ADD_IMG_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_ADD_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_DATA_UPDATE_URL;
+import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_DELETE_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.GOODS_DESCRIBE_URL;
 import static com.example.commoditymanagerment.Util.UrlHelper.USER_INFO_URL;
 
@@ -177,6 +180,8 @@ public class GoodsDescribeActivity extends BaseActivity {
     private boolean imgIsChanged = false;
     //当前用户是否拥有修改和删除商品信息的权限
     private boolean userHavePermissions = false;
+    //删除商品的url
+    private String delUrl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -304,8 +309,33 @@ public class GoodsDescribeActivity extends BaseActivity {
 
             @Override
             public void onItem2Click(View view) {
-                Toast.makeText(GoodsDescribeActivity.this , "delete" ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(GoodsDescribeActivity.this, "delete", Toast.LENGTH_SHORT).show();
+                delUrl = GOODS_DELETE_URL + goodsId;
                 bottomDialog.dismiss();
+                //删除商品
+                HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
+                httpHelper.getRequest(delUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<ResultCode>() {
+                    @Override
+                    public void onSuccess(ResultCode resultCode) {
+                        if (resultCode.getCode().equals("0")) {
+                            myHandler.sendEmptyMessage(DELETE_GOODS_SUCESS);
+                        } else {
+                            myHandler.sendEmptyMessage(DELETE_GOODS_ERROR);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(List result) {
+                        myHandler.sendEmptyMessage(DELETE_GOODS_ERROR);
+
+                    }
+
+                    @Override
+                    public void Failed(String string) {
+                        myHandler.sendEmptyMessage(DELETE_GOODS_ERROR);
+
+                    }
+                });
             }
 
             @Override
@@ -318,7 +348,7 @@ public class GoodsDescribeActivity extends BaseActivity {
     /**
      * 获取用户权限
      */
-    private void getUserPermissions(){
+    private void getUserPermissions() {
         userInfoUrl = USER_INFO_URL + preferences.getString(USER_NAME, "");
         //获取用户权限
         HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
@@ -349,7 +379,7 @@ public class GoodsDescribeActivity extends BaseActivity {
     /**
      * 修改商品种类
      */
-    private void modifyGoodsCategory(){
+    private void modifyGoodsCategory() {
 
         final ArrayList<String> goodsCategory = new ArrayList<>();
         goodsCategory.add(getResources().getString(R.string.category_hot));
@@ -371,7 +401,7 @@ public class GoodsDescribeActivity extends BaseActivity {
     /**
      * 打开相册还是使用相机
      */
-    private void openAlbumOrTakePhoto(){
+    private void openAlbumOrTakePhoto() {
 
         String item1 = "相册";
         String item2 = "拍照";
@@ -430,7 +460,7 @@ public class GoodsDescribeActivity extends BaseActivity {
     /**
      * 修改按钮点击执行的修改操作
      */
-    private void updateBtnClick(){
+    private void updateBtnClick() {
         //1 数据判空以及合法性的判断
         if (TextUtils.isEmpty(etGoodsNameEt.getText().toString())) {
             Toast.makeText(this, "商品名不能为空", Toast.LENGTH_SHORT).show();
@@ -813,7 +843,7 @@ public class GoodsDescribeActivity extends BaseActivity {
 
                     activity.getImgUrl = UrlHelper.GOODS_GET_IMG_URL + activity.goods.getGoodsImg().toString();
 
-                    Log.d(TAG, "handleMessage: getImgUrl is " + activity.getImgUrl);
+//                    Log.d(TAG, "handleMessage: getImgUrl is " + activity.getImgUrl);
                     activity.downLoad(activity.getImgUrl, activity.goods.getGoodsImg().toString());
                     break;
 
@@ -846,6 +876,15 @@ public class GoodsDescribeActivity extends BaseActivity {
                     Toast.makeText(activity, "更新商品信息成功", Toast.LENGTH_SHORT).show();
                     activity.finish();
                     break;
+
+                case DELETE_GOODS_SUCESS :
+                    Toast.makeText(activity, "删除商品信息成功", Toast.LENGTH_SHORT).show();
+                    activity.finish();
+                    break ;
+
+                case DELETE_GOODS_ERROR :
+                    Toast.makeText(activity, "删除商品信息失败", Toast.LENGTH_SHORT).show();
+                    break ;
                 default:
                     Toast.makeText(activity, "未知请求", Toast.LENGTH_SHORT).show();
                     break;
