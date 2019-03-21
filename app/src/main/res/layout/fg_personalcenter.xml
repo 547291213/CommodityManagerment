@@ -2,12 +2,287 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/tv_personalcenter"
+
+
+    <LinearLayout
+        android:id="@+id/ll_titleLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="PERSONAL CENTER"
-        android:textSize="30sp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:background="@color/light_red"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <TextView
+            android:id="@+id/tv_setBackText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="2"
+            android:gravity="left|center_vertical"
+            android:text="个人中心"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:drawablePadding="3dp"
+            android:drawableLeft="@drawable/ic_personalcenter_white_16"
+            />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="10dp"
+
+            />
+
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_divider1"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/ll_titleLayout"
         />
+
+
+    <LinearLayout
+        android:id="@+id/ll_userNameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@id/view_divider1"
+        android:alpha="0.9"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="@string/user_name"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            />
+
+        <EditText
+            android:id="@+id/et_userNameEt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingRight="15dp"
+            android:paddingLeft="10dp"
+            android:textSize="16sp"
+            android:drawableRight="@drawable/bigger"
+            android:alpha="1.0"
+            android:gravity="center_vertical"
+            android:hint="@string/user_name"
+            android:enabled="false"
+            />
+
+    </LinearLayout>
+
+
+
+    <View
+        android:id="@+id/view_divider2"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/ll_userNameLayout"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ll_userNickNameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@id/view_divider2"
+        android:alpha="0.9"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="@string/user_nick_name"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            />
+
+        <EditText
+            android:id="@+id/et_userNickNameEt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingRight="15dp"
+            android:paddingLeft="10dp"
+            android:textSize="16sp"
+            android:drawableRight="@drawable/bigger"
+            android:alpha="1.0"
+            android:gravity="center_vertical"
+            android:hint="无昵称"
+            android:enabled="false"
+            />
+
+    </LinearLayout>
+
+
+
+
+
+    <View
+        android:id="@+id/view_divider3"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/ll_userNickNameLayout"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ll_userPermissionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@id/view_divider3"
+        android:alpha="0.9"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="@string/user_permission"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            />
+
+        <EditText
+            android:id="@+id/et_userPermissionEt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingRight="15dp"
+            android:paddingLeft="10dp"
+            android:textSize="16sp"
+            android:drawableRight="@drawable/bigger"
+            android:alpha="1.0"
+            android:gravity="center_vertical"
+            android:hint="@string/user_permission"
+            android:enabled="false"
+            />
+
+    </LinearLayout>
+
+
+
+    <View
+        android:id="@+id/view_divider4"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/ll_userPermissionLayout"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ll_modiifyNickNameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@id/view_divider4"
+        android:alpha="0.9"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="@string/user_modify_nick_name"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            android:drawableRight="@drawable/bigger"
+            android:drawablePadding="5dp"
+            />
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/view_divider5"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/ll_modiifyNickNameLayout"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ll_modiifyPasswordLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@id/view_divider5"
+        android:alpha="0.9"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="@string/user_modify_password"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            android:drawableRight="@drawable/bigger"
+            android:drawablePadding="5dp"
+            />
+    </LinearLayout>
+
+
+
+    <View
+        android:id="@+id/view_divider6"
+        android:paddingTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/ll_modiifyPasswordLayout"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ll_userLogoutLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@id/view_divider6"
+        android:alpha="0.9"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="@string/user_logout"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            android:drawableRight="@drawable/bigger"
+            android:drawablePadding="5dp"
+            />
+    </LinearLayout>
+
+
 </RelativeLayout>

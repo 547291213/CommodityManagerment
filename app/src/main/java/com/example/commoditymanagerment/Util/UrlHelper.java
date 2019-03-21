@@ -13,6 +13,9 @@ public class UrlHelper {
     public static final String USER_INFO_URL = "http://192.168.43.85:8083/android//getUserInfo?userName=" ;
     //123456
 
+    //更新用户信息
+    public static final String USER_UPDATE_DATA_URL = "http://192.168.43.85:8083/android/updateUser?userId=" ;
+    //2&userName=123123&permissions=1&password=password&nickName=initializing
 
     //拉取商品列表的通用网址
     public static final String GOODS_LIST_URL = "http://192.168.43.85:8083/goods/page/getGoodsById?goodsCategory=" ;

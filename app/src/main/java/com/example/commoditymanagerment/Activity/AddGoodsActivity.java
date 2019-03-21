@@ -537,7 +537,7 @@ public class AddGoodsActivity extends BaseActivity {
     }
 
 
-    public static class MyHandler extends Handler {
+    private static class MyHandler extends Handler {
 
         private WeakReference<AddGoodsActivity> weakReference;
 

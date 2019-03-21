@@ -1,6 +1,8 @@
 package com.example.commoditymanagerment.Bean;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     int userId ;
     String userName ;
     String password ;

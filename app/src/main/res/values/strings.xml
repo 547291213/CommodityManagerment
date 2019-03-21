@@ -13,6 +13,13 @@
     <string name="goods_present_price">商品现价</string>
 
 
+    <!--用户信息-->
+    <string name="user_name">用户名称</string>
+    <string name="user_nick_name">用户昵称</string>
+    <string name="user_modify_nick_name">修改昵称</string>
+    <string name="user_permission">用户权限</string>
+    <string name="user_modify_password">修改用户密码</string>
+    <string name="user_logout">退出当前账号</string>
 
     <!--商品种类-->
     <string name="category_hot">火爆</string>
