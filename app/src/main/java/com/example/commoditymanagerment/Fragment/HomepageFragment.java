@@ -3,8 +3,11 @@ package com.example.commoditymanagerment.Fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -16,9 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.commoditymanagerment.Activity.AddGoodsActivity;
 import com.example.commoditymanagerment.Activity.SearchActivity;
+import com.example.commoditymanagerment.Bean.ResultCode;
+import com.example.commoditymanagerment.Bean.User;
 import com.example.commoditymanagerment.DrawableView.InnerViewPager;
 import com.example.commoditymanagerment.DrawableView.TopTabFragmentAdapter;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.ActivityFragment;
@@ -26,9 +32,12 @@ import com.example.commoditymanagerment.Fragment.GoodsCategory.HotFragment;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.NewProductFragment;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.OutOfStockFragment;
 import com.example.commoditymanagerment.Fragment.GoodsCategory.PromotionFragment;
+import com.example.commoditymanagerment.NetWork.HttpHelper;
+import com.example.commoditymanagerment.NetWork.NetCallBackResultBean;
 import com.example.commoditymanagerment.R;
 import com.example.commoditymanagerment.Util.DensityUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +45,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import static com.example.commoditymanagerment.Util.StaticDataUtil.ADD_GOODS_ACTIVITY_REQUEST_CODE;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.USER_NAME;
+import static com.example.commoditymanagerment.Util.UrlHelper.USER_INFO_URL;
 
 public class HomepageFragment extends Fragment {
 
@@ -160,22 +173,96 @@ public class HomepageFragment extends Fragment {
 
     }
 
+
     @OnClick({R.id.tv_addGoodsTv, R.id.et_searchEdit})
     public void onViewCLick(View view) {
         switch (view.getId()) {
             case R.id.tv_addGoodsTv:
-                Intent intent = new Intent();
-                intent.setClass(mContext, AddGoodsActivity.class);
-                startActivity(intent);
+                //获取用户权限
+                getUserPermissions();
                 break;
 
             case R.id.et_searchEdit:
-                Intent intent1 = new Intent() ;
-                intent1.setClass(mContext , SearchActivity.class) ;
+                Intent intent1 = new Intent();
+                intent1.setClass(mContext, SearchActivity.class);
                 startActivity(intent1);
                 break;
         }
 
+    }
+
+    private User user;
+    private String userInfoUrl;
+    private SharedPreferences preferences;
+    private MyHandler myHandler;
+
+    private void getUserPermissions() {
+
+        preferences = mContext.getSharedPreferences(USER_NAME, Context.MODE_PRIVATE);
+        userInfoUrl = USER_INFO_URL + preferences.getString(USER_NAME, "");
+        myHandler = new MyHandler(this);
+        HttpHelper httpHelper = HttpHelper.getInstance(getContext().getApplicationContext());
+        httpHelper.getRequest(userInfoUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<User>() {
+            @Override
+            public void onSuccess(User users) {
+                user = users;
+                myHandler.sendEmptyMessage(0);
+            }
+
+            @Override
+            public void onSuccess(List result) {
+                myHandler.sendEmptyMessage(1);
+
+            }
+
+            @Override
+            public void Failed(String string) {
+                myHandler.sendEmptyMessage(1);
+
+            }
+        });
+
+    }
+
+    private static class MyHandler extends Handler {
+
+        private WeakReference<HomepageFragment> weakReference;
+
+        public MyHandler(HomepageFragment fragment) {
+            weakReference = new WeakReference<HomepageFragment>(fragment);
+
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            HomepageFragment fragment = weakReference.get();
+            if (fragment == null) {
+                return;
+            }
+            switch (msg.what) {
+
+                case 0:
+                    if (fragment.user.getPermissions() >= 1) {
+                        Intent intent = new Intent();
+                        intent.setClass(fragment.mContext, AddGoodsActivity.class);
+                        fragment.mActivity.startActivityForResult(intent , ADD_GOODS_ACTIVITY_REQUEST_CODE);
+                    } else {
+                        Toast.makeText(fragment.mContext, "抱歉您所在的用户组没有该权限", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
+
+                case 1:
+                    Toast.makeText(fragment.mContext, "获取用户出错", Toast.LENGTH_SHORT).show();
+                    break;
+
+                default:
+
+                    Toast.makeText(fragment.mContext, "未知请求", Toast.LENGTH_SHORT).show();
+                    break;
+
+            }
+        }
     }
 
     @Override

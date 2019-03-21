@@ -32,10 +32,10 @@ public class StaticDataUtil {
     public static final int GET_GOODS_DATA_ERROR = 101;
 
     //修改商品信息成功
-    public static final int UPDATE_GOODS_DATA_SUCCESS = 102 ;
+    public static final int UPDATE_GOODS_DATA_SUCCESS = 102;
 
     //修改商品信息失败
-    public static final int UPDATE_GOODS_DATA_ERROR = 103 ;
+    public static final int UPDATE_GOODS_DATA_ERROR = 103;
 
     //用户拥有修改信息的权限
     public static final int USER_HAVE_PERMISSION = 105;
@@ -47,17 +47,23 @@ public class StaticDataUtil {
     public static final int GET_USER_PERMISSION_ERROR = 107;
 
     //删除商品成功
-    public static final int DELETE_GOODS_SUCESS = 108 ;
+    public static final int DELETE_GOODS_SUCESS = 108;
 
     //删除商品失败
-    public static final int DELETE_GOODS_ERROR = 109 ;
+    public static final int DELETE_GOODS_ERROR = 109;
 
     //用户权限限制值
     public static final int USER_PERMIISON_LIMIT = 1;
 
     //获取商品图片成功
-    public static final int GET_GOODS_IMG_SUCCESS = 1110 ;
+    public static final int GET_GOODS_IMG_SUCCESS = 1110;
 
+
+    //添加商品界面请求值
+    public static final int ADD_GOODS_ACTIVITY_REQUEST_CODE = 50;
+
+    //商品详情界面的请求值
+    public static final int GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE = 51;
 
 
 }

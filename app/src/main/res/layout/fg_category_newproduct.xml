@@ -5,13 +5,17 @@
     android:orientation="vertical"
     >
 
-    <TextView
+    <com.example.commoditymanagerment.DrawableView.GoodsListView
+        android:id="@+id/glv_newGoodsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="30sp"
-        android:text="NEW_PRODUCT"
-        android:gravity="center"
-        />
+        android:listSelector="@color/gray"
+        android:divider="@color/lighter_gray"
+        android:dividerHeight="8px"
 
+        >
+
+
+    </com.example.commoditymanagerment.DrawableView.GoodsListView>
 
 </LinearLayout>

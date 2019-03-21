@@ -3,47 +3,44 @@ package com.example.commoditymanagerment.Fragment.GoodsCategory;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.commoditymanagerment.Activity.GoodsDescribeActivity;
+import com.example.commoditymanagerment.Activity.MainActivity;
 import com.example.commoditymanagerment.Bean.Goods;
 import com.example.commoditymanagerment.Bean.GoodsGrid;
+import com.example.commoditymanagerment.DrawableView.GoodsAdapter;
 import com.example.commoditymanagerment.DrawableView.GoodsListView;
 import com.example.commoditymanagerment.NetWork.HttpHelper;
 import com.example.commoditymanagerment.NetWork.NetCallBackResultBean;
 import com.example.commoditymanagerment.R;
-import com.example.commoditymanagerment.Util.DataService;
 import com.example.commoditymanagerment.Util.UrlHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 import static com.example.commoditymanagerment.Util.DataService.ROW_COUNT;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE;
 import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_ID;
 
-public class HotFragment extends Fragment {
+public class HotFragment extends CategoryFragment {
 
     @BindView(R.id.glv_hotGoodsList)
     GoodsListView glvHotGoodsList;
@@ -60,10 +57,7 @@ public class HotFragment extends Fragment {
     private GoodsGrid goodsGrid;
 
     //商品适配器
-    private SimpleAdapter adapter;
-
-    //商品数据容器
-    private List<Map<String, Object>> goodsDataList;
+    private GoodsAdapter adapter;
 
     //当前页数
     private int nextPage = 1;
@@ -77,14 +71,17 @@ public class HotFragment extends Fragment {
     private static final String TAG = "HotFragment";
 
     //网络请求地址
-    private String url;
+    private String goodsListUrl;
+
 
     //将网络请求完成后的界面填充放置在主线程
-    private MyHanlder myHanlder = new MyHanlder(this);
+    private MyHandler myHandler = new MyHandler(this);
 
     //当前数据是否加载完成
     private boolean loadFinish = false;
 
+    //设置ListView的滑动状态。默认为静止
+    private int scrollerState = SCROLL_STATE_IDLE;
 
     @Nullable
     @Override
@@ -95,32 +92,55 @@ public class HotFragment extends Fragment {
         mContext = getContext();
         mActivity = getActivity();
         unbinder = ButterKnife.bind(this, mView);
+        //创建的碎片的时候执行以此初始化操作
+        initData();
         return mView;
     }
 
+    @Override
+    public int getScrollerState() {
+        return scrollerState;
+    }
+
+    @Override
+    public void setScrollerState(int scrollerState) {
+        this.scrollerState = scrollerState;
+    }
+
     private void initData() {
-        goodsDataList = new ArrayList<>();
-        adapter = new SimpleAdapter(mContext, goodsDataList, R.layout.item_goods,
-                new String[]{"goodsImg", "goodsName", "goodsCount", "lastModifyTime"},
-                new int[]{R.id.siv_goodsImg, R.id.tv_goodsName, R.id.tv_goodsCount, R.id.tv_goodsTime});
+
+        //初始化列表数据
+        goodsList = new ArrayList<>();
 
         glvHotGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 GoodsListView goodsListView = (GoodsListView) parent;
-                HashMap<String, Object> map = (HashMap<String, Object>) goodsListView.getItemAtPosition(position);
-//                Log.d(TAG, "onItemClick: click :" + position + " id is " + map.get("goodsId"));
+                Goods goods = (Goods) goodsListView.getItemAtPosition(position);
                 Intent intent = new Intent();
-                intent.putExtra(GOODS_ID, (Integer) map.get(GOODS_ID));
+                intent.putExtra(GOODS_ID, (Integer) goods.getGoodsId());
                 intent.setClass(mContext, GoodsDescribeActivity.class);
-                startActivity(intent);
+                mActivity.startActivityForResult(intent, GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE);
             }
         });
 
         glvHotGoodsList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            public void onScrollStateChanged(AbsListView view, int state) {
 
+                switch (state) {
+                    case SCROLL_STATE_FLING:
+                        setScrollerState(state);
+                        break;
+
+                    case SCROLL_STATE_IDLE:
+                        setScrollerState(state);
+                        break;
+
+                    case SCROLL_STATE_TOUCH_SCROLL:
+                        setScrollerState(state);
+                        break;
+                }
             }
 
             @Override
@@ -167,40 +187,40 @@ public class HotFragment extends Fragment {
      * okHttp 网络访问是异步进行，在子线程中实现，
      * 如果这里直接返回列表数据，返回为null
      *
-     * @param goodsCategory
-     * @param current
+     * @param goodsCategory 商品种类
+     * @param current 当前页面
      * @return
      */
     public void getData(final int goodsCategory, int current) {
 
-        url = UrlHelper.GOODS_LIST_URL + goodsCategory + "&current=" + current + "&rowCount=" + ROW_COUNT;
+        goodsListUrl = UrlHelper.GOODS_LIST_URL + goodsCategory + "&current=" + current + "&rowCount=" + ROW_COUNT;
         HttpHelper httpHelper = HttpHelper.getInstance(mContext.getApplicationContext());
-        httpHelper.getRequest(url, null, HttpHelper.JSON_DATA_1,
+        httpHelper.getRequest(goodsListUrl, null, HttpHelper.JSON_DATA_1,
                 new NetCallBackResultBean<GoodsGrid>() {
                     @Override
                     public void onSuccess(GoodsGrid goods) {
                         goodsGrid = goods;
-                        myHanlder.sendEmptyMessage(0);
+                        myHandler.sendEmptyMessage(0);
 
                     }
 
                     @Override
                     public void onSuccess(List result) {
-                        myHanlder.sendEmptyMessage(1);
+                        myHandler.sendEmptyMessage(1);
                     }
 
                     @Override
                     public void Failed(String string) {
-                        myHanlder.sendEmptyMessage(1);
+                        myHandler.sendEmptyMessage(1);
                     }
                 });
     }
 
-    private static class MyHanlder extends Handler {
+    private static class MyHandler extends Handler {
 
         private WeakReference<HotFragment> weakReference;
 
-        public MyHanlder(HotFragment hotFragment) {
+        public MyHandler(HotFragment hotFragment) {
             weakReference = new WeakReference<>(hotFragment);
 
         }
@@ -214,25 +234,17 @@ public class HotFragment extends Fragment {
 
             switch (msg.what) {
                 case 0:
-
                     /**
                      * 列表界面的显示
                      */
                     for (int i = 0; i < fragment.goodsGrid.getRows().size(); i++) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("goodsId", fragment.goodsGrid.getRows().get(i).getGoodsId());
-                        map.put("goodsImg", fragment.goodsGrid.getRows().get(i).getGoodsImg());
-                        map.put("goodsName", fragment.goodsGrid.getRows().get(i).getGoodsName());
-                        map.put("goodsCount", fragment.goodsGrid.getRows().get(i).getGoodsCount());
-                        map.put("lastModifyTime", fragment.goodsGrid.getRows().get(i).getLastModifyTime());
-                        fragment.goodsDataList.add(map);
+                        Goods goods = fragment.goodsGrid.getRows().get(i);
+                        fragment.goodsList.add(goods);
                     }
 
-//                    fragment.adapter = new SimpleAdapter(fragment.mContext, fragment.goodsDataList, R.layout.item_goods,
-//                            new String[]{"goodsImg", "goodsName", "goodsCount", "lastModifyTime"},
-//                            new int[]{R.id.siv_goodsImg, R.id.tv_goodsName, R.id.tv_goodsCount, R.id.tv_goodsTime});
+                    //初始化和设置适配器
+                    fragment.adapter = new GoodsAdapter(fragment.goodsList, fragment.getContext(), fragment);
                     fragment.glvHotGoodsList.setAdapter(fragment.adapter);
-//                    fragment.adapter.notifyDataSetChanged();
 
                     //隐藏底部加载栏,并将选中当前页的第一项数据
                     fragment.glvHotGoodsList.setFooterViewHide((fragment.nextPage - 1) * Integer.valueOf(ROW_COUNT) + 1);
@@ -242,7 +254,6 @@ public class HotFragment extends Fragment {
 
                     //更新当前总类商品的总个数
                     fragment.totalCount = fragment.goodsGrid.getTotal();
-
 
                     //数据加载完成
                     fragment.loadFinish = true;
@@ -258,18 +269,21 @@ public class HotFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         //数据初始化
-        nextPage =1 ;
+        if (((MainActivity) getActivity()).getNeedToReloadData()) {
+            nextPage = 1;
+            /**
+             * 将原有数据清空
+             */
+            if (goodsList != null) {
+                goodsList.clear();
+            }
+            adapter.notifyDataSetChanged();
+//            initData();
+        } else {
 
-        /**
-         * 将原有数据清空
-         */
-        if (goodsDataList != null){
-            goodsDataList.clear();
         }
-        initData();
-
-        Log.d(TAG, "onStart: ");
     }
 
     @Override

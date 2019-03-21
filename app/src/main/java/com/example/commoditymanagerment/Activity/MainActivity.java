@@ -1,11 +1,14 @@
 package com.example.commoditymanagerment.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.commoditymanagerment.DrawableView.BottomTabFragmentAdapter;
 import com.example.commoditymanagerment.DrawableView.IndexBottomLayout;
@@ -19,6 +22,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.commoditymanagerment.Util.StaticDataUtil.ADD_GOODS_ACTIVITY_REQUEST_CODE;
+import static com.example.commoditymanagerment.Util.StaticDataUtil.GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE;
 
 public class MainActivity extends BaseActivity {
 
@@ -188,4 +194,36 @@ public class MainActivity extends BaseActivity {
     }
 
 
+    /**
+     * 是否需要重新加载数据
+     * 当存在数据添加，修改，删除，且操作成功的时候，数据需要重新加载
+     */
+    private boolean needToReloadData = false ;
+    public boolean getNeedToReloadData(){
+        return needToReloadData ;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case ADD_GOODS_ACTIVITY_REQUEST_CODE:
+                if (resultCode == RESULT_OK){
+                    needToReloadData = true ;
+                }else {
+                    needToReloadData = false ;
+                }
+                break;
+
+            case GOODS_DESCRIBE_ACTIVITY_REQUEST_CODE :
+                if (resultCode == RESULT_OK){
+                    needToReloadData = true ;
+                }else {
+                    needToReloadData = false ;
+                }
+                break ;
+
+            default:
+                Toast.makeText(this , "未知请求" + requestCode,Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
 }

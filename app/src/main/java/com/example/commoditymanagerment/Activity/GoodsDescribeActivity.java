@@ -190,9 +190,6 @@ public class GoodsDescribeActivity extends BaseActivity {
         setContentView(R.layout.activity_goods_describe);
         ButterKnife.bind(this);
         goodsId = (int) getIntent().getIntExtra(GOODS_ID, -1);
-
-        Log.d(TAG, "onCreate: goodsId is " + goodsId);
-
         preferences = getSharedPreferences(USER_NAME, MODE_PRIVATE);
 
         initData();
@@ -756,6 +753,7 @@ public class GoodsDescribeActivity extends BaseActivity {
      */
     public void updateGoodsData() {
         HttpHelper httpHelper = HttpHelper.getInstance(getApplicationContext());
+        Log.d(TAG, "updateGoodsData:  updateUrl : " + updateDataUrl);
         httpHelper.getRequest(updateDataUrl, null, HttpHelper.JSON_DATA_1, new NetCallBackResultBean<ResultCode>() {
             @Override
             public void onSuccess(ResultCode resultCode) {
@@ -841,6 +839,9 @@ public class GoodsDescribeActivity extends BaseActivity {
                     activity.etGoodsDescribeEt.setText(activity.goods.getGoodsDescribe());
                     activity.tvGoodsCategoryTv.setText(GoodsCategoryExchange.exChange(activity.goods.getGoodsCategory()));
 
+                    //重要。
+                    //可能存在用户修改商品数据，但没有修改商品种类的情况，如果这里不赋值，那么category将为默认值0
+                    activity.category = activity.goods.getGoodsCategory() ;
                     activity.getImgUrl = UrlHelper.GOODS_GET_IMG_URL + activity.goods.getGoodsImg().toString();
 
 //                    Log.d(TAG, "handleMessage: getImgUrl is " + activity.getImgUrl);
@@ -874,11 +875,13 @@ public class GoodsDescribeActivity extends BaseActivity {
 
                 case UPDATE_GOODS_DATA_SUCCESS:
                     Toast.makeText(activity, "更新商品信息成功", Toast.LENGTH_SHORT).show();
+                    activity.setResult(RESULT_OK);
                     activity.finish();
                     break;
 
                 case DELETE_GOODS_SUCESS :
                     Toast.makeText(activity, "删除商品信息成功", Toast.LENGTH_SHORT).show();
+                    activity.setResult(RESULT_OK);
                     activity.finish();
                     break ;
 

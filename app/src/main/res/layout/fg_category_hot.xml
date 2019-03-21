@@ -5,19 +5,14 @@
     android:orientation="vertical"
     >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textSize="30sp"
-        android:text="HOT"
-        android:gravity="center"
-        />
-
     <com.example.commoditymanagerment.DrawableView.GoodsListView
         android:id="@+id/glv_hotGoodsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:listSelector="@color/gray"
+        android:divider="@color/lighter_gray"
+        android:dividerHeight="8px"
+
         >
 
 

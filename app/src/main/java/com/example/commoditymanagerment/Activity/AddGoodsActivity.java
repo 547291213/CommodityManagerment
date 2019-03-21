@@ -126,7 +126,6 @@ public class AddGoodsActivity extends BaseActivity {
     Button btAddGoodsBtn;
 
 
-
     //相册或者拍照完成后图片的文件
     private File imageFileDir;
 
@@ -275,7 +274,7 @@ public class AddGoodsActivity extends BaseActivity {
                     return;
                 }
 
-                if (imageFileDir == null){
+                if (imageFileDir == null) {
                     Toast.makeText(this, "商品图片不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -585,6 +584,7 @@ public class AddGoodsActivity extends BaseActivity {
 
                 case 1:
                     Toast.makeText(addGoodsActivity, "上传成功", Toast.LENGTH_SHORT).show();
+                    addGoodsActivity.setResult(RESULT_OK);
                     addGoodsActivity.finish();
                     break;
 
