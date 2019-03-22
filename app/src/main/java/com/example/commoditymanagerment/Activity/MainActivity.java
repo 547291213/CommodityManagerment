@@ -62,6 +62,7 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
 
+
         initRxBus() ;
         initView();
         initPagerAndFragment();
