@@ -76,6 +76,7 @@ public class GoodsAdapter extends BaseAdapter {
             viewHolder.goodsName = convertView.findViewById(R.id.tv_goodsName);
             viewHolder.goodsCount = convertView.findViewById(R.id.tv_goodsCount);
             viewHolder.goodsTime = convertView.findViewById(R.id.tv_goodsTime);
+            viewHolder.goodsPrice = convertView.findViewById(R.id.tv_goodsPrice) ;
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -91,6 +92,7 @@ public class GoodsAdapter extends BaseAdapter {
 //            Glide.with(mContext).load(R.drawable.ic_pic_not_found).into(viewHolder.shapedImageView) ;
 //        }
 
+        viewHolder.goodsPrice.setText("商品现价："+goodsList.get(position).getPresentPrice());
         viewHolder.goodsName.setText(goodsList.get(position).getGoodsName());
         viewHolder.goodsCount.setText(String.valueOf(goodsList.get(position).getGoodsCount()));
         viewHolder.goodsTime.setText(goodsList.get(position).getLastModifyTime());
@@ -103,6 +105,7 @@ public class GoodsAdapter extends BaseAdapter {
         TextView goodsName;
         TextView goodsCount;
         TextView goodsTime;
+        TextView goodsPrice;
     }
 
 

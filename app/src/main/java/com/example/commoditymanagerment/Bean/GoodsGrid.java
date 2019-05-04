@@ -7,7 +7,7 @@ public class GoodsGrid {
     private int current;//当前页面号
     private int rowCount;//每页行数
     private int total;//总行数
-    private List<Goods> rows;
+    private List<Goods> rows; //商品信息列表
 
     public int getCurrent() {
         return current;
